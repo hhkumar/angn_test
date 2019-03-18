@@ -1,0 +1,246 @@
+Git command line:
+
+This guide is an attempt at exploring Git and is not a foolproof method to work with it.
+It just documents my understanding of the tool.
+
+Initial setup:
+
+	1	Verify whether git is installed.
+		$ git --version
+		git version 2.7.4
+	2	Initialize git global config using a name and email address that you used while creating a git account. This will allow you to commit your files to the repository from the command line.
+		$ git config --global user.name "Hariharakumar Narasimhakumar"
+		$ git config --global user.email "hana8349@colorado.edu"
+		Verify the above configurations using the below command:
+		$ git config --list
+		user.name=Hariharakumar Narasimhakumar
+		user.email=hana8349@colorado.edu
+	3	Attempt to clone an already existing repository from Github. Here I have used a sample Git repo which I created on my github account
+		$ git clone https://github.com/hhkumar/angn_test.git
+		Cloning into 'angn_test'...
+		remote: Enumerating objects: 3, done.
+		remote: Counting objects: 100% (3/3), done.
+		remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+		Unpacking objects: 100% (3/3), done.
+		Checking connectivity... done.
+		Check whether the directory is created in the location where the clone command was run:
+		$ ls
+		angn_test
+		
+First commit:
+	
+	1	Cd into the directory and check current branch in which you are placed:
+		$ cd angn_test/
+		$ git branch
+		* master
+	2	Check the files currently present in the cloned directory:
+		$ ll
+		total 16
+		drwxrwxr-x 3 hhkumar hhkumar 4096 Mar 16 13:48 ./
+		drwxr-xr-x 4 hhkumar hhkumar 4096 Mar 16 13:48 ../
+		drwxrwxr-x 8 hhkumar hhkumar 4096 Mar 16 13:48 .git/
+		-rw-rw-r-- 1 hhkumar hhkumar   48 Mar 16 13:48 README.md
+	3	Create a sample file to emulate a piece of code that you would want to add to the codebase.
+		$ cat test.py
+		print("Some sample code")
+	4	Check status of your local directory
+		$ git status
+		On branch master
+		Your branch is up-to-date with 'origin/master'.
+		Untracked files:
+		  (use "git add <file>..." to include in what will be committed)
+
+				test.py
+
+		nothing added to commit but untracked files present (use "git add" to track)
+		You can see that there is one untracked file i.e. the one we just created.
+	5	There are 3 states a file can be in when using git.
+		Working Directory -----------------Staging Area-------------------Git repository(online)
+							git add->						git commit->
+		Currently, our file is in the working directory. To push it to the staging area, we need use the git add command
+	6	You can add all untracked files using -A or specify the name of the file you want to add i.e. git add test.py
+		$ git add -A
+		$ git status
+		On branch master
+		Your branch is up-to-date with 'origin/master'.
+		Changes to be committed:
+		  (use "git reset HEAD <file>..." to unstage)
+
+        new file:   test.py
+		Now the file is in the staging area.
+	7	To remove a file from the staging area, you can use the git reset command
+		$ git reset test.py
+		$ git status
+		On branch master
+		Your branch is up-to-date with 'origin/master'.
+		Untracked files:
+		  (use "git add <file>..." to include in what will be committed)
+
+				test.py
+
+		nothing added to commit but untracked files present (use "git add" to track)
+		The file is now moved back to being untracked.
+	8	Now let us add the file to staging area again as we want to commit this code to the online repository.
+		$ git add test.py
+		Let us commit this file to the online repository.
+		$ git commit -m "First commit"
+		[master 8f7b026] First commit
+		 1 file changed, 1 insertion(+)
+		 create mode 100644 test.py
+		Check the git status
+		$ git status
+		On branch master
+		Your branch is ahead of 'origin/master' by 1 commit.
+		  (use "git push" to publish your local commits)
+		nothing to commit, working directory clean
+		This shows that the working directory is clean and this branch is ahead of master by 1 commit i.e. the one which we did.
+	9	You can check the commits done by using the git log command:
+		$ git log
+		commit 8f7b0264ae82a09563d831a992d9faac3933e880
+		Author: Hariharakumar Narasimhakumar <hana8349@colorado.edu>
+		Date:   Sat Mar 16 14:24:12 2019 -0600
+
+			First commit
+	10	Before we push our changes to the online repository, we need to make sure that we are up-to-date on the changes to the repo since we started working on it.
+		A good practice is to pull the changes so that we are in sync before we push our own changes. We can do so using the below command:
+		$ git pull origin master
+		From https://github.com/hhkumar/angn_test
+		 * branch            master     -> FETCH_HEAD
+		Already up-to-date.
+	11	Now, as we are in sync with the repo, we can go ahead and push our changes.
+		$ git push origin master
+		Username for 'https://github.com': hhkumar
+		Password for 'https://hhkumar@github.com':
+		Counting objects: 3, done.
+		Delta compression using up to 2 threads.
+		Compressing objects: 100% (2/2), done.
+		Writing objects: 100% (3/3), 312 bytes | 0 bytes/s, done.
+		Total 3 (delta 0), reused 0 (delta 0)
+		To https://github.com/hhkumar/angn_test.git
+		   357dd06..8f7b026  master -> master
+		Here, it asks for a git username and password. Create an account before you try and push changes to the repo.
+		We can see that the changes are pushed to the repo from the UI of the Github page.
+	
+In case you want to verify your commits with the verified badge against your commits, follow the link: https://www.youtube.com/watch?v=KhROpuxHyH8
+
+Working with branches: Usually when you introduce a new feature, it is advisable to create a branch so that changes made to master does not affect the functioning of your branch.
+	
+	1	Let us create a new branch that will house our new functionality. Check using git branch command
+		$ git branch new_functionality
+		$ git branch
+		* master
+		  new_functionality
+		$ git branch -a
+		* master
+		  new_functionality
+		  remotes/origin/HEAD -> origin/master
+		  remotes/origin/master
+	2	Switch to the new branch. 
+		$ git checkout new_functionality
+		$ git branch
+		  master
+		* new_functionality
+		$ git status
+		On branch new_functionality
+		nothing to commit, working directory clean
+	3	Let us make changes to the file test.py to demonstrate addition of a new functionality.
+		$ cat test.py
+		print("Some sample code")
+		print("Testing GPG key")
+		print("Adding new functionality")
+	4	Verify that the file is untracked and add it to the staging area.
+		$ git status
+		On branch new_functionality
+		Changes not staged for commit:
+		  (use "git add <file>..." to update what will be committed)
+		  (use "git checkout -- <file>..." to discard changes in working directory)
+
+				modified:   test.py
+
+		no changes added to commit (use "git add" and/or "git commit -a")
+		$ git add -A
+	5	Commit the changes.
+		$ git commit -m "Branch functionality"
+
+		You need a passphrase to unlock the secret key for
+		user: "Hariharakumar Narasimhakumar (For github) <hana8349@colorado.edu>"
+		2048-bit RSA key, ID 8FA800B4, created 2019-03-16
+
+		gpg: gpg-agent is not available in this session
+		[new_functionality 17304f5] Branch functionality
+		 1 file changed, 1 insertion(+)
+	6	Verify using git status and git branch
+		$ git status
+		On branch new_functionality
+		nothing to commit, working directory clean
+		$ git branch
+		  master
+		* new_functionality
+	7	Push the changes to remote repository
+		$ git push -u origin new_functionality
+		Username for 'https://github.com': hhkumar
+		Password for 'https://hhkumar@github.com':
+		Counting objects: 3, done.
+		Delta compression using up to 2 threads.
+		Compressing objects: 100% (3/3), done.
+		Writing objects: 100% (3/3), 743 bytes | 0 bytes/s, done.
+		Total 3 (delta 0), reused 0 (delta 0)
+		remote:
+		remote: Create a pull request for 'new_functionality' on GitHub by visiting:
+		remote:      https://github.com/hhkumar/angn_test/pull/new/new_functionality
+		remote:
+		To https://github.com/hhkumar/angn_test.git
+		 * [new branch]      new_functionality -> new_functionality
+		Branch new_functionality set up to track remote branch new_functionality from origin.
+		Verify that the changes have been pushed to remote.
+		$ git branch -a
+		  master
+		* new_functionality
+		  remotes/origin/HEAD -> origin/master
+		  remotes/origin/master
+		  remotes/origin/new_functionality
+		Now the changes in the branch have been pushed to the remote repository.
+	8	We need to merge the changes with master. First checkout master branch.
+		$ git checkout master
+		Switched to branch 'master'
+		Your branch is up-to-date with 'origin/master'.
+		$ git branch -a
+		* master
+		  new_functionality
+		  remotes/origin/HEAD -> origin/master
+		  remotes/origin/master
+		  remotes/origin/new_functionality
+	9	Pull any changes done to master while we were adding our new functionality to the branch
+		$ git pull origin master
+		From https://github.com/hhkumar/angn_test
+		 * branch            master     -> FETCH_HEAD
+		Already up-to-date.
+	10	Check the branches merged. For now, we see only master as the branches have not been merged yet.
+		$ git branch --merged
+		* master
+	11	Merge the new branch with master.
+		$ git merge new_functionality
+		Updating dc68f08..17304f5
+		Fast-forward
+		 test.py | 1 +
+		 1 file changed, 1 insertion(+)
+		$ git branch --merged
+		* master
+		  new_functionality
+	12	Once merged, push the changes to remote repository.
+		$ git push origin master
+		Username for 'https://github.com': hhkumar
+		Password for 'https://hhkumar@github.com':
+		Total 0 (delta 0), reused 0 (delta 0)
+		To https://github.com/hhkumar/angn_test.git
+		   dc68f08..17304f5  master -> master
+	13	Verify that the changes are reflected in the UI.
+
+================================================================================================================================================
+
+
+
+
+	
+	
+		
